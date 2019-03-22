@@ -10,8 +10,7 @@
 
 <body>
     <div class="container">
-            <img id="source" style="display:none" src="https://mdn.mozillademos.org/files/5397/rhino.jpg"
-            width="256" height="256">
+        <img id="source" src="" width="256" height="256">
         <form>
             <div class="form-group">
                 <label for="img_file">Example file input</label>
@@ -20,13 +19,15 @@
             </div>
         </form>
         <div class="row">
-            <div class="col-md-4"><canvas id="img_original" width="256" height="256"></div>
-        </div>
-        <div class="col-md-4"><canvas id="img_class" width="256" height="256"></div>
-    </div>
-    </div>
-    </div>
+            <div class="col-md-4">
+                <canvas id="img_original" width="256" height="256"></canvas>
+            </div>
 
+            <div class="col-md-4">
+                <canvas id="img_class" width="256" height="256"></canvas>
+            </div>
+        </div>
+    </div>
 
     <script src="socket.io.js"></script>
     <script src="ImgClassificator.js"></script>
