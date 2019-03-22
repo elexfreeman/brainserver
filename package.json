@@ -1,0 +1,30 @@
+{
+  "name": "brainserver",
+  "version": "1.0.0",
+  "description": "Q-Learning-Algorithm server for lifeSimulation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start1": "node ./server.js",
+    "start": "ts-node-dev --respawn --transpileOnly ./server.ts",
+    "imgc": "ts-node-dev --respawn --transpileOnly ./ImgClassificatorSrv.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^0.3.1",
+    "@tensorflow/tfjs-node-gpu": "^0.3.2",
+    "argparse": "^1.0.10",
+    "canvas": "^2.4.0",
+    "express": "^4.16.4",
+    "gpu.js": "^2.0.0-rc.5",
+    "readline-sync": "^1.4.9",
+    "socket.io": "^2.2.0",
+    "ts-node-dev": "^1.0.0-pre.32",
+    "typescript": "^3.3.3333"
+  },
+  "devDependencies": {
+    "@types/node": "^11.11.2",
+    "clang-format": "~1.2.2"
+  }
+}
