@@ -1,4 +1,5 @@
 var socket = io('http://localhost:3000');
+var socket2 = io('http://localhost:3000');
 const log = console.log;
 const img_size = 256;
 
@@ -7,22 +8,26 @@ document.getElementById("Upload").addEventListener("click", onUploadFile);
 
 /* делает буфер для вывода */
 function makeBuffer(source) {
-    let Buffer = new Uint8Array(img_size*img_size);;
-    let canvas = document.getElementById(source);  
+    let Buffer = new Uint8Array(img_size * img_size);;
+    let canvas = document.getElementById(source);
     var ctx = canvas.getContext('2d');
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
     let i = 0;
-    for (let X = 0; X < img_size; X++) {
-        for (let Y = 0; Y < img_size; Y++) {
-            Buffer[Y * img_size + X] = imageData.data[i]; //берем красный
-           /*  imageData.data[i + 1] = Buffer[Y * img_size + X];
-            imageData.data[i + 2] = Buffer[Y * img_size + X];
-            imageData.data[i + 3] = 255; */
-            i += 4;
-        }
+    for (let j = 0; j < img_size * img_size; j++) {
+        Buffer[j] = imageData.data[i]; //берем красный
+        i += 4;
     }
-  
+    /*     for (let X = 0; X < img_size; X++) {
+            for (let Y = 0; Y < img_size; Y++) {
+                Buffer[Y * img_size + X] = imageData.data[i]; //берем красный
+                 imageData.data[i + 1] = Buffer[Y * img_size + X];
+                imageData.data[i + 2] = Buffer[Y * img_size + X];
+                imageData.data[i + 3] = 255; 
+                i += 4;
+            }
+        } */
+
     return Buffer;
 }
 
@@ -40,7 +45,7 @@ function onUploadFile(event) {
     /* читаем файл и ложим в картинку на канвасе */
     var selectedFile = document.getElementById('img_file').files[0];
     reader.readAsDataURL(selectedFile);
-    
+
     var image = document.getElementById('source');
 
     /* вставляем в канвас оригинала */
@@ -51,7 +56,12 @@ function onUploadFile(event) {
     /* чето делаем */
     let buffer = makeBuffer('img_original');
     /* вставляем обработанный */
-    writeImg('img_class', buffer) 
+    writeImg('img_class', buffer);
+    var t=setInterval(()=>{
+        socket.emit('client send img', new Blob([buffer]));
+    },1000);
+    
+
 }
 
 /* ******************************************* */
@@ -87,8 +97,11 @@ socket.on('img_original', (msg) => {
     writeImg('img_original', new Uint8Array(msg));
 });
 
-socket.on('img_class', (msg) => {
-    writeImg('img_class', new Uint8Array(msg));
+socket2.on('img_class_n', (msg) => {
+
+    let img = new Uint8Array(msg);
+  
+    writeImg('img_class_n', new Uint8Array(msg));
 });
 
 
