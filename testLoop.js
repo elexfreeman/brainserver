@@ -4,7 +4,7 @@ let c;
 let b;
 let a = Array(size).fill(10);
 let start, end;
-
+console.log('>>> Start <<<')
 start = new Date().getTime();
 for (let j = 0; j < loop_size; j++) {
    let b = a.map((v, k) => {
@@ -12,7 +12,7 @@ for (let j = 0; j < loop_size; j++) {
    });
 }
 end = new Date().getTime();
-console.log(`First: ${end - start}ms`);
+console.log(`First: ${(end - start)/1000}sec`);
 /* ***************************************** */
 start = new Date().getTime();
 for (let j = 0; j < loop_size; j++) {
@@ -21,7 +21,7 @@ for (let j = 0; j < loop_size; j++) {
    }
 }
 end = new Date().getTime();
-console.log(`Second: ${end - start}ms`);
+console.log(`Second: ${(end - start)/1000}sec`);
 /* ***************************************** */
 start = new Date().getTime();
 for (let j = 0; j < loop_size; j++) {
@@ -30,7 +30,7 @@ for (let j = 0; j < loop_size; j++) {
    }
 }
 end = new Date().getTime();
-console.log(`Therd: ${end - start}ms`);
+console.log(`Therd: ${(end - start)/1000}sec`);
 
 
 
