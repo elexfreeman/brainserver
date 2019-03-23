@@ -20,10 +20,10 @@ let imgSM = [];
 a.forEach((v, k) => {
     cc = tf.split(v, 3, 1);
     cc.forEach((vv, kk) => {
-        imgSM.push(vv);
+        imgSM.push(vv.arraySync());
     });
 });
 
 imgSM.forEach(element => {
-    element.print();
+    console.log(element);
 });

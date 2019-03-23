@@ -18,49 +18,42 @@ function makeBuffer(source) {
         Buffer[j] = imageData.data[i]; //берем красный
         i += 4;
     }
-    /*     for (let X = 0; X < img_size; X++) {
-            for (let Y = 0; Y < img_size; Y++) {
-                Buffer[Y * img_size + X] = imageData.data[i]; //берем красный
-                 imageData.data[i + 1] = Buffer[Y * img_size + X];
-                imageData.data[i + 2] = Buffer[Y * img_size + X];
-                imageData.data[i + 3] = 255; 
-                i += 4;
-            }
-        } */
 
+    delete imageData, ctx, canvas;
     return Buffer;
 }
 
 /* событие загрузки файла */
 function onUploadFile(event) {
-    console.log('upload');
+    let reader, output, canvas, ctx, buffer, image, selectedFile;
 
     /*  */
-    var reader = new FileReader();
+    reader = new FileReader();
     reader.onload = function () {
-        var output = document.getElementById('source');
+        output = document.getElementById('source');
         output.src = reader.result;
     };
 
     /* читаем файл и ложим в картинку на канвасе */
-    var selectedFile = document.getElementById('img_file').files[0];
+    selectedFile = document.getElementById('img_file').files[0];
     reader.readAsDataURL(selectedFile);
 
-    var image = document.getElementById('source');
+    image = document.getElementById('source');
 
     /* вставляем в канвас оригинала */
-    let canvas = document.getElementById('img_original');
-    var ctx = canvas.getContext('2d');
+    canvas = document.getElementById('img_original');
+    ctx = canvas.getContext('2d');
     ctx.drawImage(image, 0, 0, img_size, img_size);
 
     /* чето делаем */
-    let buffer = makeBuffer('img_original');
+    buffer = makeBuffer('img_original');
     /* вставляем обработанный */
     writeImg('img_class', buffer);
-    var t=setInterval(()=>{
+    var t = setInterval(() => {
         socket.emit('client send img', new Blob([buffer]));
-    },1000);
-    
+    }, 1000);
+    delete reader, output, canvas, ctx, buffer, image, selectedFile;;
+
 
 }
 
@@ -79,8 +72,9 @@ function writeImg(id, Buffer) {
     }
 
     let i = 0;
-    for (let X = 0; X < img_size; X++) {
-        for (let Y = 0; Y < img_size; Y++) {
+    for (let Y = 0; Y < img_size; Y++) {
+        for (let X = 0; X < img_size; X++) {
+
             imageData.data[i] = Buffer[Y * img_size + X];
             imageData.data[i + 1] = Buffer[Y * img_size + X];
             imageData.data[i + 2] = Buffer[Y * img_size + X];
@@ -90,18 +84,22 @@ function writeImg(id, Buffer) {
     }
 
     ctx.putImageData(imageData, 0, 0);
+    delete imageData, i, canvas, ctx;
 }
 
-// Whenever the server emits 'login', log the login message
+
 socket.on('img_original', (msg) => {
     writeImg('img_original', new Uint8Array(msg));
 });
 
 socket2.on('img_class_n', (msg) => {
-
     let img = new Uint8Array(msg);
-  
     writeImg('img_class_n', new Uint8Array(msg));
+    delete img;
+});
+
+socket2.on('img_class_n_split', (msg) => {
+    console.log(msg);
 });
 
 

@@ -10,30 +10,40 @@
 
 <body>
     <div class="container">
-        <img id="source" src="" width="256" height="256">
-        <form>
-            <div class="form-group">
-                <label for="img_file">Example file input</label>
-                <input type="file" accept="image/*" class="form-control-file" id="img_file">
-                <button type="button" class="btn btn-primary" id="Upload">Upload</button>
-            </div>
-        </form>
         <div class="row">
             <div class="col-sm-4">
-                <canvas id="img_original" width="256" height="256"></canvas>
+                <div>img_source</div>
+                <img id="source" src="" width="256" height="256">
+            </div>
+            <div class="col-sm-4">
+                <form>
+                    <div class="form-group">
+                        <label for="img_file">Example file input</label>
+                        <input type="file" accept="image/*" class="form-control-file" id="img_file">
+                        <button type="button" class="btn btn-primary" id="Upload">Upload</button>
+                    </div>
+                </form>
             </div>
 
-            <div class="col-sm-4">
-                <canvas id="img_class" width="256" height="256"></canvas>
-            </div>
-            <div class="col-sm-4">
-                <canvas id="img_class_n" width="256" height="256"></canvas>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div>source => canvas</div>
+                    <canvas id="img_original" width="256" height="256"></canvas>
+                </div>
+
+                <div class="col-sm-4">
+                    <div>source canvas => to server</div>
+                    <canvas id="img_class" width="256" height="256"></canvas>
+                </div>
+                <div class="col-sm-4">
+                    <div>server => canvas</div>
+                    <canvas id="img_class_n" width="256" height="256"></canvas>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script src="socket.io.js"></script>
-    <script src="ImgClassificator.js"></script>
+        <script src="socket.io.js"></script>
+        <script src="ImgClassificator.js"></script>
 </body>
 
 </html>
