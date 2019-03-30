@@ -1,4 +1,4 @@
-import { CubeBrainClass } from './CubeBrain';
+import { CubeBrainClass } from './JCube/CubeBrain';
 
 import { log } from './log';
 
@@ -16,21 +16,30 @@ export default class BotController {
         console.log('connect: ' + socket.id);
         bots[socket.id] = new CubeBrainClass();
 
-        let timerId = setInterval(() => {
-            if(bots[socket.id]){
-                socket.emit('set_move', true);   
-                socket.emit('set_direction', bots[socket.id].getDirection());   
-            } else {
-                clearInterval(timerId);
+        bots[socket.id].initBuffer();
+        console.log('buffer: ',bots[socket.id].getBuffer());
+
+
+        if (bots[socket.id]) {
+            socket.emit('set_move', true);
+            socket.emit('set_direction', bots[socket.id].getDirection());
+        }
+
+        /* дивижение закончилось */
+        /* msg = {
+
+        } */
+        socket.on('on_cube_stop', (msg) => {
+            /* отправляем новое расчитаный вектор двежения */
+            /* на основе полученных данных */
+            if (bots[socket.id]) {
+                socket.emit('set_direction', bots[socket.id].getDirection());
+                socket.emit('set_move', true);
             }
-           
-        }, 1000);
-
-
-        /* обработка событий текущего состояния */
-        socket.on('state message', (msg) => {
             bots[socket.id].onStateMessage(msg);
         });
+
+
         socket.on('img', (msg) => {
             //bot.echo(msg);
             socket.broadcast.emit('resend img', msg);

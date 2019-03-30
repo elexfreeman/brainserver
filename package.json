@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start1": "node ./server.js",
     "start": "ts-node-dev --respawn --transpileOnly ./server.ts",
-    "imgc": "ts-node-dev --respawn --transpileOnly ./ImgClassificatorSrv.ts"
+    "imgc": "ts-node-dev --respawn --transpileOnly ./ImgClassificatorSrv.ts",
+    "worker": "ts-node-dev --respawn --transpileOnly ./testWorker.ts",
+    "tf": "ts-node-dev --respawn --transpileOnly ./JCube/tf.ts"
   },
   "author": "",
   "license": "ISC",
