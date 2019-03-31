@@ -36,7 +36,7 @@ export class CubeBrainClass {
     /* кол-во сенсоров */
     sensorCounter = 24;
 
-    frameCounter = 100;
+    frameCounter = 300;
 
     constructor() {
         this.direction = 1;
@@ -47,12 +47,12 @@ export class CubeBrainClass {
         let state: JSensor[] = [];;
         this.buffer = [];
         for (let n = 0; n < this.frameCounter; n++) {
-            state = [];            
+            state = [];
             /* нлевые объекты */
             for (let i = 0; i < 24; i++) {
                 state.push({
                     objectType: 0,
-                    objectDistance: Math.floor(Math.random() * (200 - 5) + 5)
+                    objectDistance: Math.floor(Math.random() * (2 - 0) + 0)
                 })
             }
 
@@ -60,12 +60,12 @@ export class CubeBrainClass {
             for (let i = 0; i < 24; i += 3) {
                 state[i] = {
                     objectType: 1,
-                    objectDistance: Math.floor(Math.random() * (200 - 5) + 5)
+                    objectDistance: Math.floor(Math.random() * (2 - 0) + 0)
                 }
             }
 
             /* цель */
-            let JDistance = Math.floor(Math.random() * (200 - 5) + 5);
+            let JDistance = Math.floor(Math.random() * (2 - 0) + 0);
             state[Math.floor(Math.random() * (24 - 1) + 1)] = {
                 objectType: 1,
                 objectDistance: JDistance
@@ -78,8 +78,13 @@ export class CubeBrainClass {
             });
         }
     }
+    
 
-    getBuffer(){
+    to_0_1(resp) {
+        return resp > .5 ? 1 : 0;
+    }
+
+    getBuffer() {
         return this.buffer;
     }
 

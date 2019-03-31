@@ -1,5 +1,6 @@
 const tf = require('@tensorflow/tfjs');
 require('@tensorflow/tfjs-node');
+//require('@tensorflow/tfjs-node-gpu');
 
 import { JSensor, JFrame } from './CubeBrain';
 
@@ -34,7 +35,7 @@ export default class CubeTFClass {
                 input.push(this.buffer[i].state[j].objectType);
                 input.push(this.buffer[i].state[j].objectDistance);
             }
-            input.push(this.buffer[i].distance);
+           // input.push(this.buffer[i].distance);
 
             this.input_data.push([...input]);
             this.out_data.push([
@@ -62,9 +63,21 @@ export default class CubeTFClass {
         // }));
 
         this.model.add(tf.layers.dense({ 
-            units: 4, 
-            activation: 'sigmoid', 
+            units: 10, 
+            activation: 'relu', 
             inputShape: [this.input_data[0].length] 
+        }));
+
+        // this.model.add(tf.layers.dense({ 
+        //     units: 10, 
+        //     activation: 'sigmoid', 
+        //     inputShape: 10
+        // }));
+
+        this.model.add(tf.layers.dense({ 
+            units: 4, 
+            activation: 'softmax', 
+            inputShape: 10
         }));
         /* выход size вход size */
 
@@ -90,27 +103,26 @@ export default class CubeTFClass {
         /* подготавливаем данные для тренировки */
 
         const training_data = tf.tensor(this.input_data).softmax();
-        const target_data = tf.tensor(this.out_data).softmax();
-
+        const target_data = tf.tensor(this.out_data);
+     
         const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
         const container = {
           name: 'Model Training', styles: { height: '1000px' }
-        };
-        
+        };        
 
 
         for (let i = 1; i < iterations; ++i) {
-            // var h = await this.model.fit(training_data, target_data, {
-            //     epochs: this.epochs
-            //     , verbose: 0
-            // });
             var h = await this.model.fit(training_data, target_data, {
-                batchSize: training_data.length,
-                validationData: [training_data, target_data],
-                epochs: this.epochs,
-                shuffle: true,
-                verbose: 0
-              });
+                epochs: this.epochs
+                , verbose: 1
+            });
+            // var h = await this.model.fit(training_data, target_data, {
+            //     batchSize: training_data.length,
+            //     validationData: [training_data, target_data],
+            //     epochs: this.epochs,
+            //     shuffle: true,
+            //     verbose: 0
+            //   });
             console.log("Loss after Epoch " + i + " : " + h.history.loss[0]);
         }
         console.log('>>>>>>>>>>> learn...');
@@ -122,6 +134,7 @@ export default class CubeTFClass {
 
     async feed(pattern) {
         return await this.model.predict(tf.tensor([pattern])).array();
+        // let resp = await this.model.predict(tf.tensor([pattern])).array();
         // return resp[0].map((v, k) => {
         //     return v > .5 ? 1 : 0;
         // });
