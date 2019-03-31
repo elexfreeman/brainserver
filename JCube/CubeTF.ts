@@ -96,12 +96,8 @@ export default class CubeTFClass {
     async learn() {
 
         const start = new Date().getTime();
-
-        const iterations = 10;
-
-
+        const iterations = 2;
         /* подготавливаем данные для тренировки */
-
         const training_data = tf.tensor(this.input_data).softmax();
         const target_data = tf.tensor(this.out_data);
      
@@ -114,7 +110,7 @@ export default class CubeTFClass {
         for (let i = 1; i < iterations; ++i) {
             var h = await this.model.fit(training_data, target_data, {
                 epochs: this.epochs
-                , verbose: 1
+                , verbose: 0
             });
             // var h = await this.model.fit(training_data, target_data, {
             //     batchSize: training_data.length,

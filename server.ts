@@ -7,19 +7,20 @@ import {JCubeTFFork} from './JCube/JCubeTFControler';
 
 import BotController from './BotController';
 
-
+/* если это воркер */
 if (cluster.isWorker) {
 
     JCubeTFFork();
 }
 
+/* основноый процесс */
 if (cluster.isMaster) {
     app.get('/', function (req, res) {
         res.json({});
     });
 
     const port = 8080;
-    const BCtrl = new BotController(io);
+    const BCtrl = new BotController();
 
     io.on('connection', BCtrl.controller);
 

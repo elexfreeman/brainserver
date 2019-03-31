@@ -41,11 +41,11 @@ export class CubeBrainClass {
 
     constructor() {
         this.direction = 1;
-        this.worker = cluster.fork();
+     
     }
     
     destructor(){
-        worker.send({cmd: 'destroy'});
+       
     }
 
     /* заполняет буфер сучайными данными */
