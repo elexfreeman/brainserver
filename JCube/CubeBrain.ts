@@ -1,4 +1,3 @@
-
 /* показания сенсора */
 export interface JSensor {
     /* тип объекта */
@@ -38,8 +37,15 @@ export class CubeBrainClass {
 
     frameCounter = 300;
 
+    worker: any;
+
     constructor() {
         this.direction = 1;
+        this.worker = cluster.fork();
+    }
+    
+    destructor(){
+        worker.send({cmd: 'destroy'});
     }
 
     /* заполняет буфер сучайными данными */
@@ -92,7 +98,7 @@ export class CubeBrainClass {
     }
 
 
-    getDirection() {
+    async getDirection() {
         return Math.random() * (5 - 1) + 1;
     }
 
