@@ -113,9 +113,8 @@ export default class BotController {
 
         /* получает последний кадр с сенсоров */
         socket.on('drone_frame', (msg) => {
-            msg = msg.replace(/'/g, '"');
-            //console.log(msg);
-            try {
+            msg = msg.replace(/'/g, '"');            
+            try {               
                 if (!imOnLearn) {
                     bots[socket.id].send({
                         command: 'drone_frame',

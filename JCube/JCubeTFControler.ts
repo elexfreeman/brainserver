@@ -2,20 +2,93 @@ var cluster = require('cluster');
 
 import CubeTFClass from './CubeTF';
 import { CubeBrainClass } from './CubeBrain';
-/* Кнтролер для прощета нейросети */
+
+
+class CubeCommanderClass {
+    direction = 1;
+    goal = {
+        lastFrame: null,
+        goalDistance: -1,
+        goalDirection: -1
+    }
+    imSeeGoal = false;
+
+    imOnLearn = false;
+
+    CubeBrain: CubeBrainClass;
+    CubeTF: CubeTFClass;
+
+    constructor() {
+        this.CubeBrain = new CubeBrainClass();
+        this.CubeBrain.initBuffer();
+        this.CubeTF = new CubeTFClass(10, this.CubeBrain.buffer, this.CubeBrain.frameCounter, this.CubeBrain.sensorCounter);
+        console.log('FORK >>> createModel');
+       
+    }
+
+    async init() {
+        console.log('FORK >>> createModel');
+        /* загружаем тукущею модель */
+        this.CubeTF.createModel();
+        if (!this.imOnLearn) {
+            /* говорим что думаем */
+            process.send({ command: 'imOnLearn', imOnLearn: true });
+            console.log('FORK >>> learn');
+            this.imOnLearn = true;
+            await this.CubeTF.learn();
+            this.imOnLearn = false;
+            /* закончили думать */
+            process.send({ command: 'imOnLearn', imOnLearn: false });
+        }
+    }
+
+    async getDirection() {
+        /* покачто рандом */
+        this.direction = Math.floor(Math.random() * (5 - 1) + 1);
+        console.log('FORK >>>  ' + process.pid + ' get_direction: ', this.direction);
+        process.send({ command: 'get_direction', direction: this.direction });
+    }
+
+    async droneFrame(msg) {
+        console.log('FORK >>>  ' + process.pid + ' droneFrame');
+        try {
+            let input = JSON.parse(msg.frame).a;
+
+            /* дистанция до цели в кадре минимальная */
+            let frameGoalDistance = 10000;
+            let frameGoalDirection = -1;
+            this.imSeeGoal = false;
+            for (let i = 0; i < input.length; i++) {
+                /* ищем цель */
+                if (input[i].objectType == 'Goal') {
+                    /* берем минимальную дистанцию */
+                    if (parseInt(input[i].objectDistance) < frameGoalDistance) {
+                        frameGoalDistance = parseInt(input[i].objectDistance);
+                        frameGoalDirection = i;
+                        this.imSeeGoal = true;
+                    }
+                }
+
+                /* обновляем последнее положение цели */
+                if (frameGoalDistance < 10000) {
+                    this.goal.goalDirection = frameGoalDistance;
+                    this.goal.lastFrame = input;
+                    this.goal.goalDirection = frameGoalDirection
+                }
+            }
+        } catch (ee) {
+            //empty frame
+        }
+    }
+}
+
 /* запускается как форк основного процесса */
 export async function JCubeTFFork() {
-    let direction = 1;
-    let lastFrame;
+  
 
-    let imOnLearn = false;
-    console.log('FORK >>> ' + process.pid + ' has started.');
-    const CubeBrain = new CubeBrainClass();
-    console.log('FORK >>> createModel');
-    CubeBrain.initBuffer();
+    const CubeCommander = new CubeCommanderClass();
 
-    const CubeTF = new CubeTFClass(10, CubeBrain.buffer, CubeBrain.frameCounter, CubeBrain.sensorCounter);
-    
+   
     // // Send message to master process.
     // process.send({ msgFromWorker: 'This is from worker ' + process.pid + '.' })
 
@@ -26,38 +99,19 @@ export async function JCubeTFFork() {
             /* отправлен state */
             if (msg.command == 'send_state') {
 
-            } else
-                if (msg.command == 'init') {
-                    console.log('FORK >>> createModel');
-                    /* загружаем тукущею модель */
-                    CubeTF.createModel();
-                    if (!imOnLearn) {
-                        /* говорим что думаем */
-                        process.send({command: 'imOnLearn',imOnLearn: true});
-                        console.log('FORK >>> learn');
-                        imOnLearn = true;
-                        await CubeTF.learn();
-                        imOnLearn = false;
-                        /* закончили думать */
-                        process.send({command: 'imOnLearn',imOnLearn: false});
-                    }
-                }
-                /* получить направление движения  */
-                else if (msg.command == 'get_direction') {
-                    /* покачто рандом */
-                    direction = Math.floor(Math.random() * (5 - 1) + 1);
-                    console.log('FORK >>>  ' + process.pid + ' get_direction: ', direction);
-                    process.send({ command: 'get_direction', direction: direction });
-                } else
-
+            } 
+            else if (msg.command == 'init') {
+                CubeCommander.init();
+            }
+            /* получить направление движения  */
+            else if (msg.command == 'get_direction') {
+                await CubeCommander.getDirection();
+            } 
+            else if (msg.command == 'drone_frame') {
                 /* последний сохраненный кадр */
-                if (msg.command == 'drone_frame') {
-                        try {
-                            lastFrame = JSON.parse(msg.frame).a;
-                        } catch (ee) {
-                            //empty frame
-                        }
-                    }
+                await CubeCommander.droneFrame(msg);
+
+            }
 
         } catch (e) {
             console.log("FORK >>>  error");
