@@ -1,4 +1,4 @@
-import CubeTFClass from './CubeTF';
+import {CubeTFClass} from './CubeTF';
 
 import { CubeBrainClass } from './CubeBrain';
 import { isMainThread } from 'worker_threads';

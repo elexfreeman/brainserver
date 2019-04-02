@@ -101,7 +101,7 @@ export default class BotController {
                 /* теоретически он не должен двигаться */
                 socket.emit('set_direction', direction);
                 /* начинаем двигаться */
-                socket.emit('set_move', true);
+                //socket.emit('set_move', true);
             } else {
                 /* отправляем запрос на просчет */
                 bots[socket.id].send({ command: 'get_direction' });

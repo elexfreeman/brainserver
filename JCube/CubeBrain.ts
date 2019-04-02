@@ -1,3 +1,8 @@
+
+
+export const GOAL = 2;
+export const OBJECT = 1;
+export const NULL_OBJECT = 0;
 /* показания сенсора */
 export interface JSensor {
     /* тип объекта */
@@ -33,7 +38,7 @@ export class CubeBrainClass {
     /* текущее направление движения */
     direction: number;
     /* кол-во сенсоров */
-    sensorCounter = 24;
+    sensorCounter = 25;
 
     frameCounter = 300;
 
@@ -55,7 +60,7 @@ export class CubeBrainClass {
         for (let n = 0; n < this.frameCounter; n++) {
             state = [];
             /* нлевые объекты */
-            for (let i = 0; i < 24; i++) {
+            for (let i = 0; i < 25; i++) {
                 state.push({
                     objectType: 0,
                     objectDistance: Math.floor(Math.random() * (2 - 0) + 0)
@@ -63,7 +68,7 @@ export class CubeBrainClass {
             }
 
             /* объект */
-            for (let i = 0; i < 24; i += 3) {
+            for (let i = 0; i < 25; i += 3) {
                 state[i] = {
                     objectType: 1,
                     objectDistance: Math.floor(Math.random() * (2 - 0) + 0)
@@ -72,7 +77,7 @@ export class CubeBrainClass {
 
             /* цель */
             let JDistance = Math.floor(Math.random() * (2 - 0) + 0);
-            state[Math.floor(Math.random() * (24 - 1) + 1)] = {
+            state[Math.floor(Math.random() * (25 - 1) + 1)] = {
                 objectType: 1,
                 objectDistance: JDistance
             }

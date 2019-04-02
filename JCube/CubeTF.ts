@@ -4,7 +4,15 @@ require('@tensorflow/tfjs-node');
 
 import { JSensor, JFrame } from './CubeBrain';
 
-export default class CubeTFClass {
+
+
+
+export interface GoalInterface {
+    lastFrame: any[];
+    goalDistance: number;
+    goalDirection: number;
+}
+export class CubeTFClass {
 
     epochs: number;
     model: any;
@@ -23,6 +31,11 @@ export default class CubeTFClass {
         this.prepareData();
     }
 
+    bufferPush(b: JFrame) {
+        this.buffer.shift();
+        this.buffer.push(b);
+    }
+
     /* подготавливаем данные для тренировки */
     prepareData() {
         this.input_data = [];
@@ -31,18 +44,19 @@ export default class CubeTFClass {
         let input = [];
         for (let i = 0; i < this.buffer.length; i++) {
             input = [];
+            /* обзорные данные */
             for (let j = 0; j < this.buffer[i].state.length; j++) {
                 input.push(this.buffer[i].state[j].objectType);
                 input.push(this.buffer[i].state[j].objectDistance);
             }
-           // input.push(this.buffer[i].distance);
+            input.push(this.buffer[i].distance);
 
             this.input_data.push([...input]);
             this.out_data.push([
-                (this.buffer[i].direction==1) ? 1:0,
-                (this.buffer[i].direction==2) ? 1:0,
-                (this.buffer[i].direction==3) ? 1:0,
-                (this.buffer[i].direction==4) ? 1:0,
+                (this.buffer[i].direction == 1) ? 1 : 0,
+                (this.buffer[i].direction == 2) ? 1 : 0,
+                (this.buffer[i].direction == 3) ? 1 : 0,
+                (this.buffer[i].direction == 4) ? 1 : 0,
             ]);
         }
         console.log('input_data', this.input_data.length);
@@ -62,10 +76,10 @@ export default class CubeTFClass {
         //     inputShape: [this.input_data[0].length]
         // }));
 
-        this.model.add(tf.layers.dense({ 
-            units: 10, 
-            activation: 'relu', 
-            inputShape: [this.input_data[0].length] 
+        this.model.add(tf.layers.dense({
+            units: 10,
+            activation: 'relu',
+            inputShape: [this.input_data[0].length]
         }));
 
         // this.model.add(tf.layers.dense({ 
@@ -74,9 +88,9 @@ export default class CubeTFClass {
         //     inputShape: 10
         // }));
 
-        this.model.add(tf.layers.dense({ 
-            units: 4, 
-            activation: 'softmax', 
+        this.model.add(tf.layers.dense({
+            units: 4,
+            activation: 'softmax',
             inputShape: 10
         }));
         /* выход size вход size */
@@ -89,7 +103,7 @@ export default class CubeTFClass {
             loss: 'categoricalCrossentropy',
             metrics: ['accuracy'],
         });
-       // this.model.compile({ loss: 'meanSquaredError', optimizer: 'rmsprop' });
+        // this.model.compile({ loss: 'meanSquaredError', optimizer: 'rmsprop' });
     }
 
 
@@ -100,11 +114,11 @@ export default class CubeTFClass {
         /* подготавливаем данные для тренировки */
         const training_data = tf.tensor(this.input_data).softmax();
         const target_data = tf.tensor(this.out_data);
-     
+
         const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
         const container = {
-          name: 'Model Training', styles: { height: '1000px' }
-        };        
+            name: 'Model Training', styles: { height: '1000px' }
+        };
 
 
         for (let i = 1; i < iterations; ++i) {
@@ -128,9 +142,28 @@ export default class CubeTFClass {
 
     }
 
+    /* pattern:[objType, objDist, ... , goalDistance = min  distanse - ожидаем так] */
+    /* на выходе направление */
     async feed(pattern) {
-        return await this.model.predict(tf.tensor([pattern])).array();
-        // let resp = await this.model.predict(tf.tensor([pattern])).array();
+
+        /* прогодняем через сеть */
+        let resp = await this.model.predict(tf.tensor([pattern])).array();
+
+        /* в случае нуля ставим случайное */
+        let direction = Math.floor(Math.random() * (5 - 1) + 1);
+        let max = 0;
+        let max_key = 0;
+        for (let i = 0; i < resp.length; i++) {
+            if (resp[i] > max) {
+                max = resp[i];
+                max_key = i + 1;
+            }
+        }
+        if (max > 0) {
+            return max_key;
+        } else {
+            return direction;
+        }
         // return resp[0].map((v, k) => {
         //     return v > .5 ? 1 : 0;
         // });
