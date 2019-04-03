@@ -1,7 +1,7 @@
 var cluster = require('cluster');
 
 import { CubeTFClass, GoalInterface } from './CubeTF';
-import { CubeBrainClass, JFrame, GOAL, OBJECT, NULL_OBJECT } from './CubeBrain';
+import { CubeBrain, JFrame, GOAL, OBJECT, NULL_OBJECT } from './CubeBrain';
 
 
 class CubeCommanderClass {
@@ -15,7 +15,7 @@ class CubeCommanderClass {
 
     imOnLearn = false;
 
-    CubeBrain: CubeBrainClass;
+    
     CubeTF: CubeTFClass;
 
     constructor() {
@@ -31,18 +31,13 @@ class CubeCommanderClass {
             goalDistance: -1,
             lastFrame: null
         }
-
-
-
-        this.CubeBrain = new CubeBrainClass();
-        this.CubeBrain.initBuffer();
-        this.CubeTF = new CubeTFClass(10, this.CubeBrain.buffer, this.CubeBrain.frameCounter, this.CubeBrain.sensorCounter);
-        console.log('FORK >>> createModel');
+ 
+        this.CubeTF = new CubeTFClass(4, CubeBrain.buffer, CubeBrain.frameCounter, CubeBrain.sensorCounter);       
 
     }
 
     async init() {
-        console.log('FORK >>> createModel');
+        //console.log('FORK >>> createModel');
         /* загружаем тукущею модель */
         this.CubeTF.createModel();
         if (!this.imOnLearn) {
@@ -65,10 +60,10 @@ class CubeCommanderClass {
 
     async doLearn() {
         process.send({ command: 'imOnLearn', imOnLearn: true });
-        console.log('FORK >>> learn');
+        //console.log('FORK >>> learn');
         this.imOnLearn = true;
         await this.CubeTF.learn();
-        console.log('FORK >>> STOP learn');
+        //console.log('FORK >>> STOP learn');
         this.imOnLearn = false;
         /* закончили думать */
         process.send({ command: 'imOnLearn', imOnLearn: false });
@@ -79,11 +74,11 @@ class CubeCommanderClass {
         if (this.imSeeGoal) {
             if (!this.imOnLearn) {
                 /* есть текущее положение цели */
-                console.log('Im on Learn', this.imOnLearn);
+                //console.log('Im on Learn', this.imOnLearn);
                 /* пробуем новое положение */
                 this.direction = await this.CubeTF.feed(this.prepareFeed());
 
-                console.log('FORK >>>  ' + process.pid + ' get_direction NET: ', this.direction);
+                //console.log('FORK >>>  ' + process.pid + ' get_direction NET: ', this.direction);
                 process.send({ command: 'get_direction', direction: this.direction });
 
                 /* если есть кадр о переучиваемся */
@@ -106,13 +101,13 @@ class CubeCommanderClass {
         } else {
             /* рандом */
             this.direction = Math.floor(Math.random() * (5 - 1) + 1);
-            console.log('FORK >>>  ' + process.pid + ' get_direction: ', this.direction);
+            //console.log('FORK >>>  ' + process.pid + ' get_direction: ', this.direction);
             process.send({ command: 'get_direction', direction: this.direction });
         }
     }
 
     async droneFrame(msg) {
-        console.log('FORK >>>  ' + process.pid + ' droneFrame');
+        //console.log('FORK >>>  ' + process.pid + ' droneFrame');
         try {
             let input = JSON.parse(msg.frame).a;
 
@@ -152,7 +147,7 @@ class CubeCommanderClass {
             }
 
             if (this.imSeeGoal) {
-                console.log('FORK >>>  goal: ', this.Goal.goalDirection, this.Goal.goalDistance);
+                //console.log('FORK >>>  goal: ', this.Goal.goalDirection, this.Goal.goalDistance);
             }
             /* логируем  */
         } catch (ee) {
@@ -173,7 +168,7 @@ export async function JCubeTFFork() {
 
     // Receive messages from the master process.
     process.on('message', async function (msg) {
-        //console.log("FORK >>>  msg from MASTER");       
+        ////console.log("FORK >>>  msg from MASTER");       
         try {
             /* отправлен state */
             if (msg.command == 'send_state') {
@@ -193,8 +188,8 @@ export async function JCubeTFFork() {
             }
 
         } catch (e) {
-            console.log("FORK >>>  error");
-            console.log(e);
+            //console.log("FORK >>>  error");
+            //console.log(e);
         }
 
     });

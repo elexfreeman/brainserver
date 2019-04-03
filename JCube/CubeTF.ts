@@ -22,6 +22,7 @@ export class CubeTFClass {
 
     input_data: any;
     out_data: any;
+    buffer_counter = 0;
 
     constructor(epochs: number, buffer: JFrame[], frameCounter: number, sensorCounter: number) {
         this.epochs = epochs;
@@ -34,6 +35,8 @@ export class CubeTFClass {
     bufferPush(b: JFrame) {
         this.buffer.shift();
         this.buffer.push(b);
+        this.buffer_counter++;
+        console.log('buffer_counter >> ',this.buffer_counter);
     }
 
     /* подготавливаем данные для тренировки */

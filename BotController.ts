@@ -19,7 +19,7 @@ class JBotCommander {
                         /* если это json то обрабатываем */
                         if (msg.command == 'get_direction') {
                             /* получаем от форка направение */
-                            console.log('MASTER >>> : Sending direction: ', msg.direction);
+                            //console.log('MASTER >>> : Sending direction: ', msg.direction);
                             that.socket.emit('set_direction', msg.direction);
                             resolve(true);
                         }
@@ -49,13 +49,13 @@ export default class BotController {
 
 
         let that = this;        
-        console.log('connect: ' + socket.id);
+        //console.log('connect: ' + socket.id);
         bots[socket.id] = cluster.fork();
 
         /* -------------------------------------------- */
         /* отправка в форк */
         if (bots[socket.id]) {
-            console.log('MASTER >>> getDirection');
+            //console.log('MASTER >>> getDirection');
             /* отправляем запрос на просчет */
             imOnLearn = true;
             direction = Math.floor(Math.random() * (5 - 1) + 1);
@@ -73,9 +73,9 @@ export default class BotController {
                 /* если это json то обрабатываем */
                 if (msg.command == 'get_direction') {
                     /* получаем от форка направение */
-                    console.log('MASTER >>> : Sending direction: ', msg.direction);
+                    //console.log('MASTER >>> : Sending direction: ', msg.direction);
                     socket.emit('set_direction', msg.direction);
-                    console.log('MASTER >>> set_move');
+                    //console.log('MASTER >>> set_move');
                     /* начинаем двигаться */
                     socket.emit('set_move', true);
                 } else if (msg.command == 'imOnLearn') {
@@ -94,7 +94,7 @@ export default class BotController {
         socket.on('on_cube_stop', async (msg) => {
             /* отправляем новое расчитаный вектор двежения */
             /* на основе полученных данных */
-            //console.log('MASTER >>> on_cube_stop');
+            ////console.log('MASTER >>> on_cube_stop');
 
             if (imOnLearn) {
                 direction = Math.floor(Math.random() * (5 - 1) + 1);
@@ -122,11 +122,11 @@ export default class BotController {
                     });
                 }
             } catch (e) {
-                //console.log('JSON - error');
+                ////console.log('JSON - error');
             }
         });
         socket.on('disconnect', (msg) => {
-            console.log('MASTER >>> client ' + socket.id + ' disconnected');
+            //console.log('MASTER >>> client ' + socket.id + ' disconnected');
             /* удаляем процес и почищам память */
             bots[socket.id].kill();
             delete bots[socket.id];
