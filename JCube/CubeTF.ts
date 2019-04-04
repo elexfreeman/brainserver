@@ -1,5 +1,5 @@
 const tf = require('@tensorflow/tfjs');
-require('@tensorflow/tfjs-node');
+//require('@tensorflow/tfjs-node');
 //require('@tensorflow/tfjs-node-gpu');
 
 import { JSensor, JFrame } from './CubeBrain';

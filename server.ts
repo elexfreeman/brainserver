@@ -19,7 +19,7 @@ if (cluster.isMaster) {
         res.json({});
     });
 
-    const port = 8080;
+    const port = 3000;
     const BCtrl = new BotController();
 
     io.on('connection', BCtrl.controller);
