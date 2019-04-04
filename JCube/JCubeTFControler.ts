@@ -32,7 +32,7 @@ class CubeCommanderClass {
             lastFrame: null
         }
  
-        this.CubeTF = new CubeTFClass(4, CubeBrain.buffer, CubeBrain.frameCounter, CubeBrain.sensorCounter);       
+        this.CubeTF = new CubeTFClass(10, CubeBrain.buffer, CubeBrain.frameCounter, CubeBrain.sensorCounter);       
 
     }
 
