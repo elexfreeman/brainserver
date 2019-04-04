@@ -1,1 +1,6 @@
 node_modules
+ProjectSettings.json
+VSWorkspaceState.json
+VSWorkspaceState.json
+.suo
+slnx.sqlite
