@@ -2,6 +2,9 @@
 
 > docker push elextraza/tf-node:brainserver_1.0
 
+/home/projects/brainserver
+
+
 ## использует tensorflow-gpu
 ### nvidia CUDA drivers
 https://developer.nvidia.com/cuda-90-download-archive
