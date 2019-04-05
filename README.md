@@ -1,4 +1,7 @@
 # socket.io - сервер для формирования поведения
+
+docker push elextraza/tf-node:brainserver_1.0
+
 ## использует tensorflow-gpu
 ### nvidia CUDA drivers
 https://developer.nvidia.com/cuda-90-download-archive
